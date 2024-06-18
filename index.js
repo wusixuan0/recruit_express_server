@@ -26,15 +26,30 @@ async function googleApiFetch(prompt) {
 }
 
 async function readFile() {
+    const randomIndex = Math.floor(Math.random() * 3) + 1;
+
+    const fileName = `response${randomIndex}.txt`;
+
+    try {
+        const data = await fs.promises.readFile(fileName, 'utf-8');
+        return data;
+    } catch (err) {
+        console.error('Error reading file:', err);
+    }
+}
+
+async function saveToFile(filePath, data) {
   try {
-    const data = await fs.promises.readFile('responseText.txt', 'utf-8');
-    return data;
+    await fs.promises.writeFile(filePath, data, 'utf-8');
+    console.log(`Successfully saved data to ${filePath}`);
   } catch (err) {
-    console.error('Error reading file:', err);
+    console.error('Error saving file:', err);
   }
 }
 
 app.get("/api", async (req, res) => {
+    console.log(`Received Get request for ${req.url} at ${new Date().toISOString()}`);
+
     const responseText = await readFile();
 
     res.json({
@@ -42,12 +57,19 @@ app.get("/api", async (req, res) => {
     });
 });
 
+
 app.post("/api", async (req, res) => {
+    console.log(`Received Post request for ${req.url} at ${new Date().toISOString()}`);
     const prompt = req.body.prompt;
 
     try {
         const responseText = await googleApiFetch(prompt);
 
+        // for testing
+        const timestamp = new Date().toISOString().replace(/:/g, '-');
+        const fileName = `response-${timestamp}.txt`;
+        await saveToFile(fileName, responseText);
+        
         res.json({
             responseText: responseText,
         });
