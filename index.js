@@ -5,7 +5,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai"
 import * as fs from 'fs';
 
 const app = express();
-const PORT = 3001;
+const port = process.env.PORT || 3001;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -47,7 +47,7 @@ async function saveToFile(filePath, data) {
   }
 }
 
-app.get("/api", async (req, res) => {
+app.get("/", async (req, res) => {
     console.log(`Received Get request for ${req.url} at ${new Date().toISOString()}`);
 
     const responseText = await readFile();
@@ -58,7 +58,7 @@ app.get("/api", async (req, res) => {
 });
 
 
-app.post("/api", async (req, res) => {
+app.post("/", async (req, res) => {
     console.log(`Received Post request for ${req.url} at ${new Date().toISOString()}`);
     const prompt = req.body.prompt;
 
@@ -74,6 +74,6 @@ app.post("/api", async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server listening on ${PORT}`);
+app.listen(port, () => {
+    console.log(`Server listening on ${port}`);
 });
