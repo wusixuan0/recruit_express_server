@@ -2,6 +2,7 @@ import dotenv from 'dotenv/config'
 import express from 'express';
 import cors from 'cors';
 import { GoogleGenerativeAI } from "@google/generative-ai"
+import * as fs from 'fs';
 
 const app = express();
 const PORT = 3001;
@@ -24,9 +25,26 @@ async function googleApiFetch(prompt) {
     return text;
 }
 
+async function readFile() {
+  try {
+    const data = await fs.promises.readFile('responseText.txt', 'utf-8');
+    return data;
+  } catch (err) {
+    console.error('Error reading file:', err);
+  }
+}
+
+app.get("/api", async (req, res) => {
+    const responseText = await readFile();
+
+    res.json({
+        responseText: responseText,
+    });
+});
+
 app.post("/api", async (req, res) => {
-    const prompt = req.body.prompt; 
-    
+    const prompt = req.body.prompt;
+
     try {
         const responseText = await googleApiFetch(prompt);
 
