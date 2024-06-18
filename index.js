@@ -64,11 +64,6 @@ app.post("/api", async (req, res) => {
 
     try {
         const responseText = await googleApiFetch(prompt);
-
-        // for testing
-        const timestamp = new Date().toISOString().replace(/:/g, '-');
-        const fileName = `response-${timestamp}.txt`;
-        await saveToFile(fileName, responseText);
         
         res.json({
             responseText: responseText,
